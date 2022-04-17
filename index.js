@@ -3,6 +3,7 @@ const express = require("express");
 const utils = require("./lib/utils");
 const morgan = require("morgan");
 const cors = require('cors');
+const { request } = require("http");
 
 const app = express();
 app.use(cors());
@@ -43,6 +44,25 @@ app.get("/api/persons/:id", (req, res) => {
 
   res.json(person);
 });
+
+app.put("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const updatedPerson = req.body;
+
+  if (!updatedPerson.name | !updatedPerson.number) {
+    return res.status(422).json({
+      error: "update value of content missing"
+    })
+  }
+
+  persons = persons.map(person => person.id === id ? updatedPerson : person);
+  const content = {
+    ...persons.find(person => person.id === updatedPerson.id),
+    ...updatedPerson
+  }
+
+  res.json(content);
+})
 
 // deleting resource
 app.delete("/api/persons/:id", (req, res) => {
